@@ -1,0 +1,166 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+<section class="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8">
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8 md:p-10 mt-10">
+    
+    <h2 class="text-3xl font-extrabold text-center text-indigo-700 mb-6">
+      🎧 Convert Your Video or Audio
+    </h2>
+
+    {% if error %}
+      <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg text-sm font-semibold">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    {% if download_url %}
+      <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg text-center font-medium">
+        ✅ Conversion successful! Click below to download your file.
+      </div>
+      <div class="flex justify-center">
+        <a href="{{ download_url }}" download class="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow hover:from-green-600 hover:to-green-800 transition">
+          ⬇️ Download File
+        </a>
+      </div>
+    {% else %}
+      <form id="converterForm" method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <div class="space-y-4">
+          {{ form.as_p }}
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-blue-100 rounded-full h-5 overflow-hidden hidden" id="progressContainer">
+          <div class="bg-gradient-to-r from-indigo-500 to-blue-500 h-full rounded-full text-black font-semibold text-sm text-center leading-5 transition-all duration-300 ease-out"
+               id="progressBar" style="width: 0%;">
+            0%
+          </div>
+        </div>
+
+        <!-- Spinner -->
+        <div id="conversionSpinner" class="hidden text-center mt-4 text-indigo-600 font-semibold">
+          <div class="animate-spin rounded-full h-8 w-8 border-4 border-indigo-500 border-t-transparent mx-auto mb-2"></div>
+          🔄 Converting your file, please wait...
+        </div>
+
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 shadow-md">
+          🎵 Convert Now
+        </button>
+      </form>
+    {% endif %}
+    
+
+    <!-- AJAX Result Area -->
+    <div id="resultMessage" class="mt-6 text-center text-lg font-medium"></div>
+  </div>
+   <div class="mt-12 mb-8 mx-auto max-w-3xl bg-white rounded-xl shadow-lg p-8">
+  <h3 class="text-2xl font-bold text-center text-indigo-900 mb-6">How It Works</h3>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="flex items-start space-x-4">
+      <div class="flex-shrink-0 bg-indigo-100 text-indigo-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg"></div>
+      <div>
+        <h4 class="text-lg font-semibold text-indigo-900">Upload Your File</h4>
+        <p class="text-gray-600 text-sm">Select a video or audio file using the file input. Maximum size: 200MB.</p>
+      </div>
+    </div>
+    <div class="flex items-start space-x-4">
+      <div class="flex-shrink-0 bg-indigo-100 text-indigo-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg"></div>
+      <div>
+        <h4 class="text-lg font-semibold text-indigo-900">Choose Output Format</h4>
+        <p class="text-gray-600 text-sm">Pick your desired audio format from the dropdown menu.</p>
+      </div>
+    </div>
+    <div class="flex items-start space-x-4">
+      <div class="flex-shrink-0 bg-indigo-100 text-indigo-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg"></div>
+      <div>
+        <h4 class="text-lg font-semibold text-indigo-900">Convert</h4>
+        <p class="text-gray-600 text-sm">Click "Convert Now" to start. Watch the progress bar and spinner track your conversion.</p>
+      </div>
+    </div>
+    <div class="flex items-start space-x-4">
+      <div class="flex-shrink-0 bg-indigo-100 text-indigo-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg"></div>
+      <div>
+        <h4 class="text-lg font-semibold text-indigo-900">Download</h4>
+        <p class="text-gray-600 text-sm">Once converted, click the "Download File" link to save your audio.</p>
+      </div>
+    </div>
+  </div>
+</div>
+  
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById('converterForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+  const progressContainer = document.getElementById('progressContainer');
+  const progressBar = document.getElementById('progressBar');
+  const resultMessage = document.getElementById('resultMessage');
+  const spinner = document.getElementById('conversionSpinner');
+
+  // Reset UI
+  progressBar.style.width = '0%';
+  progressBar.textContent = '0%';
+  resultMessage.innerHTML = '';
+  spinner.classList.remove('hidden'); // Show spinner early
+  progressContainer.classList.remove('hidden');
+
+  const xhr = new XMLHttpRequest();
+
+  xhr.upload.addEventListener('progress', function (e) {
+    if (e.lengthComputable) {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      progressBar.style.width = percent + '%';
+      progressBar.textContent = percent + '%';
+    }
+  });
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      spinner.classList.add('hidden');
+      progressContainer.classList.add('hidden');
+
+      try {
+        const response = JSON.parse(xhr.responseText);
+
+        if (xhr.status === 200 && response.success) {
+          resultMessage.innerHTML = `
+            <div class="p-4 bg-green-100 text-green-800 rounded-lg">
+              ✅ Conversion successful!
+              <br>
+              <a href="${response.download_url}" download class="inline-block mt-3 px-5 py-2 bg-green-600 text-black rounded hover:bg-green-700 transition">
+                ⬇️ Download File
+              </a>
+            </div>`;
+          form.reset();
+        } else {
+          resultMessage.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">
+            ❌ Error: ${response.error || 'Unknown error occurred'}
+          </div>`;
+        }
+
+      } catch (err) {
+        let message = xhr.status >= 400 && xhr.responseText
+         ? `❌ ${xhr.status} Error: ${xhr.responseText}`
+         : '❌ Failed to parse server response. File might be too large.';
+    
+        resultMessage.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">${message}</div>`;
+      }
+    }
+  };
+
+  xhr.open('POST', '', true);
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  xhr.send(formData);
+});})
+</script>
+{% endblock %}
