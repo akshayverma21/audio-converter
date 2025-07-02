@@ -14,6 +14,7 @@ from celery import Celery
 from pathlib import Path
 import logging
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,13 +105,12 @@ WSGI_APPLICATION = 'audio_converter.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://postgres:8447942886@localhost:5432/audioconverter',
-        conn_max_age=600
+        default=config('DATABASE_URL')  # Get DB URL from .env
     )
-    }
+}
 
 
-
+# default='postgres://postgres:8447942886@localhost:5432/audioconverter',
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
