@@ -23,13 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0g9((@llpgu)#&jz3dweuwd0apld7*wf+!9le+$u7@ccvoovkq'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+
+
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1','*']
 
 
 
@@ -105,7 +107,8 @@ WSGI_APPLICATION = 'audio_converter.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL')  # Get DB URL from .env
+        default=config('DATABASE_URL'),  # Get DB URL from .env
+        conn_max_age=600
     )
 }
 
@@ -194,8 +197,9 @@ MEDIA_ROOT= os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/2'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
+CELERY_BROKER_URL = config('REDIS_URL')
+CELERY_RESULT_BACKEND = config('REDIS_URL')
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

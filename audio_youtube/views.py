@@ -27,7 +27,7 @@ allowed = settings.ALLOWED_EXTENSIONS
 def converter(request):
     if request.method == 'POST':
         form = AudioConverterForm(request.POST, request.FILES)
-        print(f"Form is valid? {form.is_valid()}")
+       
         if form.is_valid():
            
             audio = request.FILES['audio_file']
@@ -47,7 +47,7 @@ def converter(request):
                     'success': False,
                     'error': f'Unsupported file extension: {input_ext}'
                 }, status=400)
-            logger.error(f"DEBUG: Entered converter view.{audio.name}{input_ext}")
+            
 
             input_name = f"{uuid4()}{input_ext}"
             input_path = os.path.join(settings.MEDIA_ROOT, 'uploads', input_name)
@@ -158,8 +158,6 @@ def delete_files(file_paths,delay_minutes=30):
         try:
             if os.path.exists(path):
                 os.remove(path)
-                print(f"Deleted: {path}")
-            else:
-                print(f"File not found: {path}")
+
         except Exception as e:
-                print(f"Failed to delete {path}: {e}")
+                pass
