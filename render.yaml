@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: audio-converter-web
+    env: python
+    region: oregon
+    buildCommand: "./build.sh"
+    startCommand: gunicorn audio_converter.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+    plan: free
