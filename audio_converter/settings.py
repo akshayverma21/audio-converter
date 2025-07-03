@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
-from celery import Celery
+
 from pathlib import Path
 import logging
 import dj_database_url
@@ -50,9 +50,7 @@ INSTALLED_APPS = [
     'theme',
 ]
 
-app = Celery('audio_converter')
-app.config_from_object('django.conf:settings', namespace='CELERY')
-app.autodiscover_tasks()
+
 
 
 ALLOWED_EXTENSIONS = ['.mp3', '.wav', '.ogg', '.flac', '.aac', '.wma', '.m4a', '.amr',
@@ -198,12 +196,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-CELERY_BROKER_URL = config('REDIS_URL')
-CELERY_RESULT_BACKEND = config('REDIS_URL')
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
 
 

@@ -11,8 +11,8 @@ from django.http import JsonResponse
 import threading
 import time
 from datetime import timedelta
-from celery import Celery
-from celery import shared_task
+# from celery import Celery
+# from celery import shared_task
 from django.conf import settings
 import logging
 
@@ -72,7 +72,7 @@ def converter(request):
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             # Cleanup task
-            delete_files.delay([input_full_path, output_path], delay_minutes=30)
+            threading.Thread(target=delete_files, args=([input_full_path, output_path], 5)).start()
             
             try:
                 success, error = convert_audio_ffmpeg(input_path, output_path, target_format)
@@ -152,12 +152,12 @@ def convert_audio_ffmpeg(input_path, output_path, target_format):
     except subprocess.CalledProcessError as e:
         return False, e.stderr
     
-@shared_task
-def delete_files(file_paths,delay_minutes=30):
-    for path in file_paths:
-        try:
+# @shared_task
+def delete_files(file_paths, delay_minutes=30):
+    try:
+        time.sleep(delay_minutes * 60)
+        for path in file_paths:
             if os.path.exists(path):
                 os.remove(path)
-
-        except Exception as e:
-                pass
+    except Exception:
+        pass
