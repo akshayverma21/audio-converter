@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .forms import AudioConverterForm
 from django.http import FileResponse
-from pydub import AudioSegment
+# from pydub import AudioSegment
 import os
 from django.conf import settings
 from uuid import uuid4
