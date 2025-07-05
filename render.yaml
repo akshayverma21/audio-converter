@@ -13,4 +13,5 @@ services:
       - key: DEBUG
         value: "False"
     plan: free
-    pythonVersion: 3.11
+    build:
+         pythonVersion: 3.12.3
