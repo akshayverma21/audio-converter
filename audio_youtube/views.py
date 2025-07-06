@@ -72,7 +72,7 @@ def converter(request):
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             # Cleanup task
-            threading.Thread(target=delete_files, args=([input_full_path, output_path], 5)).start()
+            threading.Thread(target=delete_files, args=([input_full_path, output_path], 30*60)).start()
             
             try:
                 success, error = convert_audio_ffmpeg(input_path, output_path, target_format)
