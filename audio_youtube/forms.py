@@ -13,7 +13,7 @@ SUPPORTED_FORMATS = [
     ('wma', 'WMA'),
 ]
 class AudioConverterForm(forms.Form):
-    audio_file=forms.FileField(label="upload your audio")
+    audio_file=forms.FileField(label="upload your audio or video")
     format=forms.ChoiceField(choices=SUPPORTED_FORMATS, label="Convert to")
 
 

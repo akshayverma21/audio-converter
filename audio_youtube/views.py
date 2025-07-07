@@ -68,11 +68,11 @@ def converter(request):
 
             input_full_path = conversion.original_file.path
             output_name = f"{uuid4()}.{target_format}"
-            output_path = os.path.join(settings.MEDIA_ROOT, 'converted', output_name)
+            output_path = os.path.join(settings.STATIC_MEDIA_ROOT, 'converted', output_name)
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             # Cleanup task
-            threading.Thread(target=delete_files, args=([input_full_path, output_path], 30*60)).start()
+            threading.Thread(target=delete_files, args=([input_full_path, output_path], 30)).start()
             
             try:
                 success, error = convert_audio_ffmpeg(input_path, output_path, target_format)
@@ -86,7 +86,8 @@ def converter(request):
                 conversion.status = 'completed'
                 conversion.save()
 
-                download_url = settings.MEDIA_URL + f'converted/{output_name}'
+                STATIC_SITE_BASE = "https://audiofiles-audio_converter.onrender.com"
+                download_url = f"{STATIC_SITE_BASE}/converted/{output_name}"
 
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('json') == 'true':
                     return JsonResponse({
