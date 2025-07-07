@@ -26,6 +26,4 @@ urlpatterns = [
     path('', include('audio_youtube.urls')),
 ]
 if settings.DEBUG:
-    urlpatterns += [
-        static(settings.STATIC_MEDIA_URL, document_root=settings.STATIC_MEDIA_ROOT)
-    ]
+    urlpatterns += static(settings.STATIC_MEDIA_URL, document_root=settings.STATIC_MEDIA_ROOT)
