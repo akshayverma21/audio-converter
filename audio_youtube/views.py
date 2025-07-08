@@ -15,6 +15,9 @@ from datetime import timedelta
 # from celery import shared_task
 from django.conf import settings
 import logging
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 
 # Create your views here.
@@ -23,6 +26,31 @@ logger = logging.getLogger(__name__)
 
 MAX_UPLOAD_SIZE_MB = 268
 allowed = settings.ALLOWED_EXTENSIONS
+
+
+def upload_to_drive(file_path, file_name, folder_id):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = os.path.join(settings.BASE_DIR, 'credentials.json')
+
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+
+    file_metadata = {
+        'name': file_name,
+        'parents': [folder_id],
+    }
+
+    media = MediaFileUpload(file_path, resumable=True)
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    # Make the file publicly accessible
+    service.permissions().create(
+        fileId=file.get('id'),
+        body={'role': 'reader', 'type': 'anyone'},
+    ).execute()
+
+    return f"https://drive.google.com/uc?id={file.get('id')}&export=download"
 
 def converter(request):
     if request.method == 'POST':
@@ -86,8 +114,8 @@ def converter(request):
                 conversion.status = 'completed'
                 conversion.save()
 
-                STATIC_SITE_BASE = "https://audiofiles-audio_converter.onrender.com"
-                download_url = f"{STATIC_SITE_BASE}/converted/{output_name}"
+                folder_id = '1tjX_JJEvWG4Nr67CGaEu-lyqnEPohItl'
+                download_url = upload_to_drive(output_path, output_name, folder_id)
 
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('json') == 'true':
                     return JsonResponse({
@@ -117,7 +145,8 @@ def converter(request):
 
                 return render(request, 'convert.html', {
                     'form': form,
-                    'error': f"Conversion failed: {str(e)}"
+                    'error': f"Conversion failed: {str(e)}",
+                    'download_url': download_url,
                 })
          
         

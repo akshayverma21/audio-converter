@@ -20,9 +20,10 @@
         ✅ Conversion successful! Click below to download your file.
       </div>
       <div class="flex justify-center">
-        <a href="{{ download_url }}" download class="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow hover:from-green-600 hover:to-green-800 transition">
+        <a href="{{ download_url }}" class="btn btn-success" target="_blank">Download Converted File</a>
+        {% comment %} <a href="{{ download_url }}" download class="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow hover:from-green-600 hover:to-green-800 transition">
           ⬇️ Download File
-        </a>
+        </a> {% endcomment %}
       </div>
     {% else %}
       <form id="converterForm" method="POST" enctype="multipart/form-data" class="space-y-6">
