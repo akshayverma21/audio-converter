@@ -23,7 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-
+GOOGLE_DRIVE_FOLDER_ID = config("GOOGLE_DRIVE_FOLDER_ID")
+GOOGLE_CREDENTIALS_FILE = os.path.join(BASE_DIR, config("GOOGLE_CREDENTIALS_PATH"))
 
 
 SECRET_KEY = config('SECRET_KEY')
