@@ -4,4 +4,4 @@ __pycache__/
 db.sqlite3
 *.pyc
 *.conversion_errors.log
-.credentials.json
+credentials.json
