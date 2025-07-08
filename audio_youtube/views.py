@@ -30,7 +30,8 @@ allowed = settings.ALLOWED_EXTENSIONS
 
 def upload_to_drive(file_path, file_name, folder_id):
     SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = os.path.join(settings.BASE_DIR, 'credentials.json')
+    SERVICE_ACCOUNT_FILE = settings.GOOGLE_CREDENTIALS_FILE
+    folder_id = folder_id or settings.GOOGLE_DRIVE_FOLDER_ID
 
     credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
