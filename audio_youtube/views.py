@@ -32,9 +32,8 @@ allowed = settings.ALLOWED_EXTENSIONS
 def upload_to_drive(file_path, file_name, folder_id):
     SCOPES = ['https://www.googleapis.com/auth/drive']
     credentials_json = config('GOOGLE_CREDENTIALS_JSON')
-
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(credentials_json), scopes=SCOPES)
     service = build('drive', 'v3', credentials=credentials)
 
     file_metadata = {
@@ -45,7 +44,6 @@ def upload_to_drive(file_path, file_name, folder_id):
     media = MediaFileUpload(file_path, resumable=True)
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-    # Make the file publicly accessible
     service.permissions().create(
         fileId=file.get('id'),
         body={'role': 'reader', 'type': 'anyone'},
