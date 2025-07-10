@@ -100,6 +100,7 @@ def converter(request):
 
             # Cleanup task
             threading.Thread(target=delete_files, args=([input_full_path, output_path], 30)).start()
+            download_url = None
             
             try:
                 success, error = convert_audio_ffmpeg(input_path, output_path, target_format)
