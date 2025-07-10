@@ -190,3 +190,7 @@ def delete_files(file_paths, delay_minutes=30):
                 os.remove(path)
     except Exception:
         pass
+
+
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
