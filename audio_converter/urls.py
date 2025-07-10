@@ -21,6 +21,8 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.urls import re_path
 
+handler404 = 'audio_youtube.views.custom_404_view'
+
 urlpatterns = [
     path('844794/', admin.site.urls),
     path('', include('audio_youtube.urls')),
