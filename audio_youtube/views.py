@@ -48,8 +48,8 @@ def upload_to_drive(file_path, file_name, folder_id):
         fileId=file.get('id'),
         body={'role': 'reader', 'type': 'anyone'},
     ).execute()
-# f"https://drive.google.com/uc?id={file.get('id')}&export=download"
-    return f"https://drive.google.com/fake-download-link"
+
+    return f"https://drive.google.com/uc?id={file.get('id')}&export=download"
 
 def converter(request):
     if request.method == 'POST':
@@ -134,7 +134,7 @@ def converter(request):
                 conversion.status = 'failed'
                 conversion.error_message = str(e)
                 conversion.save()
-                logger.error(f"DEBUG: Entered converter view.{request.method}-files-{request.FILES}-post-{request.POST}-content_type-{request.content_type}")
+                logger.error(f"DEBUG: Entered converter view.{error} {request.method}-files-{request.FILES}-post-{request.POST}-content_type-{request.content_type}")
 
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('json') == 'true':
                     return JsonResponse({
