@@ -48,8 +48,8 @@ def upload_to_drive(file_path, file_name, folder_id):
         fileId=file.get('id'),
         body={'role': 'reader', 'type': 'anyone'},
     ).execute()
-
-    return f"https://drive.google.com/uc?id={file.get('id')}&export=download"
+# f"https://drive.google.com/uc?id={file.get('id')}&export=download"
+    return f"https://drive.google.com/fake-download-link"
 
 def converter(request):
     if request.method == 'POST':
