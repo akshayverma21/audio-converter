@@ -111,6 +111,10 @@ DATABASES = {
     )
 }
 
+SUPABASE_URL = config("SUPABASE_URL")
+SUPABASE_KEY = config("SUPABASE_KEY")
+SUPABASE_BUCKET_NAME = config("SUPABASE_BUCKET_NAME")
+
 
 # default='postgres://postgres:8447942886@localhost:5432/audioconverter',
 LOGGING = {
