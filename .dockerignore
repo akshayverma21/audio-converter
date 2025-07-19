@@ -21,7 +21,12 @@ db.sqlite3
 # Logs & junk
 *.log
 *.tmp
+# Keep node_modules/ ignored to ensure npm install builds it fresh in the container
 node_modules/
 # Django collectstatic output (will build fresh)
 staticfiles/
 media/
+
+# REMOVE OR COMMENT OUT THESE LINES:
+# theme
+# theme/static_src
