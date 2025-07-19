@@ -56,6 +56,15 @@ RUN DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY_BUILD python manage.py collectstatic --
 
 # ---------- Port ----------
 EXPOSE 8000
+-------
+RUN python manage.py tailwind build || true
+
+# ---------- Static Assets ----------
+RUN python manage.py collectstatic --noinput || true
+
+# echo "Database is ready. Running migrations..."
+RUN python manage.py migrate --noinput
 
 # ---------- Entrypoint ----------
-CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
