@@ -1,3 +1,34 @@
+
+// // theme/tailwind.config.js
+// module.exports = {
+//     content: [
+//         // 1. Templates within the 'theme' app itself (e.g., theme/templates/theme/base.html)
+//         // If your theme app's templates are directly under `theme/templates/`, use `./templates/**/*.html`.
+//         // If they are nested like `theme/templates/theme/`, then './templates/theme/**/*.html'
+//         './templates/**/*.html', // This covers `theme/templates/`
+
+//         // 2. Main templates directory of the project (your_project_root/templates)
+//         // From `theme/`, you go up one level (`../`) to `your_project_root/`, then into `templates/`.
+//         '../../audio_converter/templates/**/*.html',
+
+//         // 3. Templates in other Django apps (e.g., audio_youtube/templates/audio_youtube/some_template.html)
+//         // From `theme/`, you go up one level (`../`) to `your_project_root/`.
+//         // Then, you look into any app directory (`*/`), then its `templates/` folder, and then any nested folders.
+//         '../**/templates/**/*.html', // This is a good catch-all for other app templates
+//     ],
+//     theme: {
+//         extend: {},
+//     },
+//     plugins: [
+//         require('@tailwindcss/forms'),
+//         require('@tailwindcss/typography'),
+//         require('@tailwindcss/line-clamp'),
+//         require('@tailwindcss/aspect-ratio'),
+//     ],
+// }
+
+
+
 /**
  * This is a minimal config.
  *

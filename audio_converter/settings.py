@@ -15,7 +15,6 @@ from pathlib import Path
 import logging
 import dj_database_url
 from decouple import config
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,18 +49,8 @@ INSTALLED_APPS = [
     'audio_youtube',
     'tailwind',
     'theme',
-    'pdf_converter',
-    'file_converter',
-    'django_ckeditor_5',
-
 ]
 
-CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-        'language': 'en',
-    },
-}
 
 
 
@@ -73,11 +62,10 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS= ['127.0.0.1']
+TAILWIND_CSS_PATH = 'css/dist/styles.css'
+NPM_BIN_PATH = 'npm'
 
-
-# NPM_BIN_PATH = '/usr/local/bin/npm'
-
-NPM_BIN_PATH = 'npm.cmd'
+# NPM_BIN_PATH = 'npm.cmd'
 
 
 MIDDLEWARE = [
@@ -211,3 +199,9 @@ MEDIA_ROOT= os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+
+

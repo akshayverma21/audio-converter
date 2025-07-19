@@ -12,9 +12,8 @@ from django.urls import path, include
 from .views import *
 from . import views
 
-
-
 urlpatterns = [
-    path('',views.home, name='home'),
-    path('audio_converter', views.converter, name='audio_converter'),
+    path('', views.converter, name='audio_converter'),
+    
+
 ]

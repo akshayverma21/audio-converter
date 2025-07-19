@@ -20,17 +20,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from django.urls import re_path
-from audio_youtube import views
-
 
 handler404 = 'audio_youtube.views.custom_404_view'
 
 urlpatterns = [
     path('844794/', admin.site.urls),
-    path('', include('audio_youtube.urls')),  # Move converter to a different prefix
-    path('pdf/', include('pdf_converter.urls')), 
-    path('pdf/',include('file_converter.urls'))
+    path('', include('audio_youtube.urls')),
 ]
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_MEDIA_URL, document_root=settings.STATIC_MEDIA_ROOT)
-    
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
