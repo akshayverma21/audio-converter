@@ -45,7 +45,6 @@ WORKDIR /app
 # This command should run from /app, and it will look for the tailwind config in theme/static_src
 
 # ---------- Static Assets ----------
-RUN python manage.py collectstatic --noinput || true
 
 # ---------- Port ----------
 EXPOSE 8000
