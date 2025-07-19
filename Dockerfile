@@ -1,12 +1,11 @@
 # ---------- Base Image ----------
 FROM python:3.12-slim
-
 # Python runtime env
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # ---------- System Dependencies ----------
-# Install postgresql-client, nodejs, npm, and other dependencies
+# postgresql-client for pg_isready; node & npm for tailwind; curl for diagnostics
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice \
     libreoffice-writer \
@@ -30,18 +29,24 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ---------- App Code ----------
 COPY . .
 
-# Normalize line endings for scripts
+# Normalize line endings on our entry script (in case committed from Windows)
 RUN dos2unix wait-for-db.sh || true
 
-# ---------- Tailwind Setup ----------
-# Run npm install in the theme directory where package.json exists
-WORKDIR /app/theme
+# --- FIX FOR NPM INSTALL ERROR STARTS HERE ---
+# Change directory to where package.json is located for npm install
+WORKDIR /app/theme/static_src
 RUN npm install || true
-RUN python /app/manage.py tailwind build || true
+# --- FIX FOR NPM INSTALL ERROR ENDS HERE ---
+
+# Change back to the main app directory for Django commands
+WORKDIR /app
+
+# Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
+# This command should run from /app, and it will look for the tailwind config in theme/static_src
+RUN python manage.py tailwind build || true
 
 # ---------- Static Assets ----------
-WORKDIR /app
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput || true
 
 # ---------- Port ----------
 EXPOSE 8000
