@@ -33,10 +33,10 @@ COPY . .
 # Normalize line endings on our entry script (in case committed from Windows)
 RUN dos2unix wait-for-db.sh || true
 
-# Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
-COPY audio_converter/theme/static_src/package*.json /app/audio_converter/theme/static_src/
-WORKDIR /app/audio_converter/theme/static_src
+
+COPY package*.json ./
 RUN npm install || true
+RUN npm run build || true
 
 
 # ---------- Port ----------
