@@ -34,9 +34,9 @@ COPY . .
 RUN dos2unix wait-for-db.sh || true
 
 
-COPY package*.json ./
+# COPY package*.json ./
 RUN npm install || true
-RUN npm run build || true
+# RUN npm run build || true
 
 
 # ---------- Port ----------
