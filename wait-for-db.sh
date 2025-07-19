@@ -1,6 +1,7 @@
-
 #!/usr/bin/env bash
-set -e # Exit immediately if a command exits with a non-zero status
+set -ex # <--- CHANGED: Added 'x' to enable command tracing
+
+echo "--- Script started: wait-for-db.sh ---" # <--- NEW: Early debug message
 
 echo "Waiting for database..."
 until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
@@ -9,33 +10,26 @@ done
 
 echo "Database is ready."
 
-# --- Corrected: Removed 'RUN' and added env var passing ---
-# These commands now run as plain shell commands at runtime.
-# SECRET_KEY and DEBUG environment variables are provided by Render at runtime.
 echo "Running Tailwind build..."
-SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py tailwind build --no-input || true
+# Ensure these environment variables are actually set in Render!
+SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py tailwind build --no-input || { echo "Tailwind build failed!"; exit 1; } # <--- Added error handling
 
 echo "Collecting static files..."
-SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py collectstatic --noinput || true
-# --- End Corrected ---
+SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py collectstatic --noinput || { echo "Collectstatic failed!"; exit 1; } # <--- Added error handling
 
 echo "Running migrations..."
-SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py migrate --noinput
+SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py migrate --noinput || { echo "Migrations failed!"; exit 1; } # <--- Added error handling
 
 # Create superuser if env vars present
 if [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
   echo "Ensuring superuser exists..."
-  # CRITICAL FIX: Added 'from decouple import config' inside the PYCODE block.
-  # Added SECRET_KEY and DEBUG prefix here too for consistency, though shell might inherit for internal calls.
   SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" python manage.py shell <<'PYCODE'
 import os
 from django.contrib.auth import get_user_model
-from decouple import config # <--- NEW: Import config function
+from decouple import config
 
 User = get_user_model()
 
-# Ensure these environment variables (DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD)
-# are set in Render's environment variables for your service!
 email = config("DJANGO_SUPERUSER_EMAIL", default=None)
 password = config("DJANGO_SUPERUSER_PASSWORD", default=None)
 username = email.split('@')[0] if email else "admin"
@@ -51,12 +45,6 @@ fi
 echo "Starting Gunicorn..."
 # Ensure Gunicorn also inherits the necessary environment variables
 exec SECRET_KEY="$SECRET_KEY" DEBUG="$DEBUG" "$@"
-
-
-
-
-
-
 
 
 
