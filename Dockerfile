@@ -43,7 +43,6 @@ WORKDIR /app
 
 # Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
 # This command should run from /app, and it will look for the tailwind config in theme/static_src
-RUN python manage.py tailwind build || true
 
 # ---------- Static Assets ----------
 RUN python manage.py collectstatic --noinput || true
