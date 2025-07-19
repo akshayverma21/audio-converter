@@ -48,6 +48,7 @@ WORKDIR /app
 
 # ---------- Port ----------
 EXPOSE 8000
-
+RUN chmod +x /app/wait-for-db.sh
 # ---------- Entrypoint ----------
-CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
