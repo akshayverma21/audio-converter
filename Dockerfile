@@ -49,5 +49,6 @@ WORKDIR /app
 # ---------- Port ----------
 EXPOSE 8000
 
-# ---------- Entrypoint ----------
-CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# # ---------- Entrypoint ----------
+# CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["/bin/bash", "-c", "echo '!!! Render test: If you see this, basic container startup works !!!'; sleep 300"]
