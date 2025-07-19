@@ -15,6 +15,7 @@ from pathlib import Path
 import logging
 import dj_database_url
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-
+# GOOGLE_DRIVE_FOLDER_ID = config("GOOGLE_DRIVE_FOLDER_ID")
+# GOOGLE_CREDENTIALS_FILE = os.path.join(BASE_DIR, config("GOOGLE_CREDENTIALS_PATH"))
 
 
 SECRET_KEY = config('SECRET_KEY')
@@ -48,8 +50,18 @@ INSTALLED_APPS = [
     'audio_youtube',
     'tailwind',
     'theme',
+    'pdf_converter',
+    'file_converter',
+    'django_ckeditor_5',
+
 ]
 
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+        'language': 'en',
+    },
+}
 
 
 
@@ -109,6 +121,10 @@ DATABASES = {
         conn_max_age=600
     )
 }
+
+SUPABASE_URL = config("SUPABASE_URL")
+SUPABASE_KEY = config("SUPABASE_KEY")
+SUPABASE_BUCKET_NAME = config("SUPABASE_BUCKET_NAME")
 
 
 # default='postgres://postgres:8447942886@localhost:5432/audioconverter',
@@ -195,9 +211,3 @@ MEDIA_ROOT= os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-
-
-
-

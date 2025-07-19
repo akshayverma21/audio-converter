@@ -1,0 +1,65 @@
+{%extends 'layout.html'%}
+{%block content%}
+
+<head>
+  <meta charset="utf-8">
+  <title>{{ article.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  {# Basic SEO meta #}
+  {% with desc=article.content|striptags|truncatechars:155 %}
+    <meta name="description" content="{{ desc }}">
+  {% endwith %}
+
+  {# Canonical URL #}
+  {% if request.build_absolute_uri %}
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  {% endif %}
+
+  {# Open Graph #}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ article.title }}">
+  {% with ogdesc=article.content|striptags|truncatechars:200 %}
+    <meta property="og:description" content="{{ ogdesc }}">
+  {% endwith %}
+  {% if article.article_image %}
+    <meta property="og:image" content="{{ article.article_image }}">
+  {% endif %}
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+  {# Twitter Card #}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ article.title }}">
+  {% with twdesc=article.content|striptags|truncatechars:200 %}
+    <meta name="twitter:description" content="{{ twdesc }}">
+  {% endwith %}
+  {% if article.article_image %}
+    <meta name="twitter:image" content="{{ article.article_image }}">
+  {% endif %}
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed text-gray-800">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-3xl">
+    <article class="bg-white rounded-xl shadow-md p-6 sm:p-8">
+      <header class="mb-6">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ article.title }}</h1>
+        <p class="text-sm text-gray-600 mt-2">Published: {{ article.created_at|date:"F j, Y" }}</p>
+      </header>
+
+      {% if article.article_image %}
+        <div class="mb-6">
+          <img src="{{ article.article_image }}" alt="{{ article.title }}" class="w-full h-auto rounded-lg">
+        </div>
+      {% endif %}
+      
+      <div class="article-content prose prose-indigo max-w-none">{{ article.content|safe }}</div>
+      
+
+      <footer class="mt-8 pt-4 border-t border-gray-200">
+        <p class="text-sm text-gray-600">Written by {{ article.author|default:"Team" }}</p>
+      </footer>
+    </article>
+  </div>
+</body>
+</html>
+{%endblock%}

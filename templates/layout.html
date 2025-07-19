@@ -5,21 +5,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Universal Audio Converter</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" href="https://afzclrvsjnhbwgoebqpr.supabase.co/storage/v1/object/public/convertedfiles/logo/all%20in%20one.png" type="image/png" sizes="50x50">
+  <link rel="apple-touch-icon" href="https://afzclrvsjnhbwgoebqpr.supabase.co/storage/v1/object/public/convertedfiles/logo/all%20in%20one.png" sizes="200x200">
+  <title>ALL IN ONE</title>
+  
   {% tailwind_css %}
 
-  <!-- Google AdSense -->
+  <!-- Google AdSense with error handling -->
+  <script>
+    // Initialize adsbygoogle to prevent errors if script fails to load
+    window.adsbygoogle = window.adsbygoogle || [];
+    window.adsbygoogle.loaded = true;
+  </script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx"
     crossorigin="anonymous"></script>
+  <style>
+    /* Ensure ad containers have proper dimensions before ads load */
+    .ad-container {
+      min-height: 90px; /* Minimum height for ad units */
+      background-color: transparent;
+      overflow: hidden;
+    }
+    .vertical-ad {
+      width: 160px;
+      height: 600px;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-100 via-blue-50 to-indigo-100 min-h-screen font-sans antialiased">
+<body class="bg-gradient-to-br from-gray-100 via-blue-50 to-indigo-100 min-h-screen font-sans antialiased flex flex-col">
   <!-- Navbar -->
   <nav class="sticky top-0 bg-yellow-300 bg-opacity-90 backdrop-blur-md shadow-md z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <div class="flex-shrink-0">
-          <a href="/" class="text-2xl font-bold text-gray-900">audio-video converter</a>
+          <a href="/" class="text-2xl font-bold text-gray-900">All in One</a>
         </div>
         <!-- Navigation Links -->
         <div class="hidden md:flex space-x-8">
@@ -37,34 +58,46 @@
     </div>
   </nav>
 
-  <!-- Top Ad -->
-  <div class="w-full flex justify-center bg-white shadow-md py-3">
+  <!-- Top Ad - Now with proper container -->
+  <div class="w-full flex justify-center bg-white shadow-md py-3 ad-container">
     <ins class="adsbygoogle"
         style="display:block"
         data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
         data-ad-slot="1234567890"
         data-ad-format="auto"
         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <script>
+      // Only push if the container is visible
+      if (document.querySelector('.ad-container').offsetWidth > 0) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    </script>
   </div>
 
-  {% block content %}
-  {% endblock %}
+  <main class="flex-grow">
+    {% block content %}
+    {% endblock %}
+  </main>
 
   <!-- Footer Ad -->
-  <div class="w-full flex justify-center bg-white py-4 shadow-inner">
+  <div class="w-full flex justify-center bg-white py-4 shadow-inner ad-container">
     <ins class="adsbygoogle"
         style="display:block"
         data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
         data-ad-slot="1234567893"
         data-ad-format="horizontal"
         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <script>
+      if (document.querySelector('footer .ad-container').offsetWidth > 0) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    </script>
   </div>
 
   <footer class="bg-gray-900 text-white py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-sm">© 2025 Universal Audio Converter. Designed with passion.</p>
+      <p class="text-sm">© 2025 Universal Converter. Designed with passion.</p>
+      <h1>version 0.1.0</h1>
       <div class="mt-4 flex justify-center space-x-6">
         {% comment %} <a href="/" class="text-gray-400 hover:text-white">Privacy</a>
         <a href="/" class="text-gray-400 hover:text-white">Terms</a>
@@ -73,23 +106,45 @@
     </div>
   </footer>
 
-  <!-- Left Side Ad -->
-  <div class="fixed top-24 left-0 z-50 hidden sm:block">
+  <!-- Left Side Ad - Only loads when visible -->
+  <div class="fixed top-24 left-0 z-50 hidden sm:block vertical-ad ad-container">
     <ins class="adsbygoogle"
-        style="display:block;width:160px;height:600px"
+        style="display:block"
         data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-        data-ad-slot="1234567891"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        data-ad-slot="1234567891"
+        data-ad-format="vertical"
+        data-full-width-responsive="false"></ins>
+    <script>
+      // Only load sidebar ads if the viewport is wide enough
+      if (window.innerWidth > 768) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    </script>
   </div>
 
-  <!-- Right Side Ad -->
-  <div class="fixed top-24 right-0 z-50 hidden sm:block">
+  <!-- Right Side Ad - Only loads when visible -->
+  <div class="fixed top-24 right-0 z-50 hidden sm:block vertical-ad ad-container">
     <ins class="adsbygoogle"
-        style="display:block;width:160px;height:600px"
+        style="display:block"
         data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-        data-ad-slot="1234567892"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        data-ad-slot="1234567892"
+        data-ad-format="vertical"
+        data-full-width-responsive="false"></ins>
+    <script>
+      if (window.innerWidth > 768) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    </script>
   </div>
 
+  <!-- Fallback for ad errors -->
+  <script>
+    // Handle any potential ad errors silently
+    window.addEventListener('error', function(e) {
+      if (e.message.includes('adsbygoogle')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>

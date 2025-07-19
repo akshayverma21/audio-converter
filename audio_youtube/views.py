@@ -1,63 +1,30 @@
 from django.shortcuts import render
 from .forms import AudioConverterForm
-from django.http import FileResponse
-# from pydub import AudioSegment
-import os
-from django.conf import settings
-from uuid import uuid4
-import subprocess
-from .models import AudioConversion
 from django.http import JsonResponse
+from django.conf import settings
+from .models import AudioConversion
+from uuid import uuid4
+import os
 import threading
 import time
-from datetime import timedelta
-# from celery import Celery
-# from celery import shared_task
-from django.conf import settings
+import subprocess
 import logging
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from .supabase_upload import upload_to_supabase
 
-
-# Create your views here.
 logger = logging.getLogger(__name__)
-
 
 MAX_UPLOAD_SIZE_MB = 268
 allowed = settings.ALLOWED_EXTENSIONS
 
+def home(request):
+    return render(request, 'home.html')
 
-def upload_to_drive(file_path, file_name, folder_id):
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-    SERVICE_ACCOUNT_FILE = os.path.join(settings.BASE_DIR, 'credentials.json')
 
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    service = build('drive', 'v3', credentials=credentials)
-
-    file_metadata = {
-        'name': file_name,
-        'parents': [folder_id],
-    }
-
-    media = MediaFileUpload(file_path, resumable=True)
-    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
-    # Make the file publicly accessible
-    service.permissions().create(
-        fileId=file.get('id'),
-        body={'role': 'reader', 'type': 'anyone'},
-    ).execute()
-
-    return f"https://drive.google.com/uc?id={file.get('id')}&export=download"
 
 def converter(request):
     if request.method == 'POST':
         form = AudioConverterForm(request.POST, request.FILES)
-       
         if form.is_valid():
-           
             audio = request.FILES['audio_file']
 
             if audio.size > settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024:
@@ -75,7 +42,6 @@ def converter(request):
                     'success': False,
                     'error': f'Unsupported file extension: {input_ext}'
                 }, status=400)
-            
 
             input_name = f"{uuid4()}{input_ext}"
             input_path = os.path.join(settings.MEDIA_ROOT, 'uploads', input_name)
@@ -101,7 +67,7 @@ def converter(request):
 
             # Cleanup task
             threading.Thread(target=delete_files, args=([input_full_path, output_path], 30)).start()
-            
+
             try:
                 success, error = convert_audio_ffmpeg(input_path, output_path, target_format)
                 if not success:
@@ -110,12 +76,12 @@ def converter(request):
                     logger.error(f"FFmpeg failed: {error}{audio.name}{input_ext}")
                     raise Exception("Conversion failed: File may be corrupted or unsupported.")
 
+                # Upload to Supabase
+                download_url = upload_to_supabase(output_path, f"converted/{output_name}")
+
                 conversion.converted_file = f'converted/{output_name}'
                 conversion.status = 'completed'
                 conversion.save()
-
-                folder_id = '1tjX_JJEvWG4Nr67CGaEu-lyqnEPohItl'
-                download_url = upload_to_drive(output_path, output_name, folder_id)
 
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('json') == 'true':
                     return JsonResponse({
@@ -134,7 +100,7 @@ def converter(request):
                 conversion.status = 'failed'
                 conversion.error_message = str(e)
                 conversion.save()
-                logger.error(f"DEBUG: Entered converter view.{request.method}-files-{request.FILES}-post-{request.POST}-content_type-{request.content_type}")
+                logger.error(f"DEBUG: Entered converter view{str(e)}.{request.method}-files-{request.FILES}-post-{request.POST}-content_type-{request.content_type}")
 
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('json') == 'true':
                     return JsonResponse({
@@ -145,18 +111,16 @@ def converter(request):
 
                 return render(request, 'convert.html', {
                     'form': form,
-                    'error': f"Conversion failed: {str(e)}",
-                    'download_url': download_url,
+                    'error': f"Conversion failed: {str(e)}"
                 })
-         
-        
+
     else:
         form = AudioConverterForm()
 
     return render(request, 'convert.html', {'form': form})
 
+
 def convert_audio_ffmpeg(input_path, output_path, target_format):
-    # Format-specific tweaks
     format_args = {
         "mp3": ["-map", "0:a", "-vn", "-c:a", "libmp3lame"],
         "wav": ["-map", "0:a", "-vn", "-c:a", "pcm_s16le"],
@@ -169,7 +133,7 @@ def convert_audio_ffmpeg(input_path, output_path, target_format):
         "aac": ["-map", "0:a", "-vn", "-c:a", "aac", "-f", "adts"]
     }
 
-    args = format_args.get(target_format, ["-map", "0:a", "-vn", "-c:a", "copy"]) # default: copy codec if unknown
+    args = format_args.get(target_format, ["-map", "0:a", "-vn", "-c:a", "copy"])
 
     try:
         subprocess.run(
@@ -181,8 +145,8 @@ def convert_audio_ffmpeg(input_path, output_path, target_format):
         return True, None
     except subprocess.CalledProcessError as e:
         return False, e.stderr
-    
-# @shared_task
+
+
 def delete_files(file_paths, delay_minutes=30):
     try:
         time.sleep(delay_minutes * 60)
@@ -191,3 +155,9 @@ def delete_files(file_paths, delay_minutes=30):
                 os.remove(path)
     except Exception:
         pass
+
+
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
+
