@@ -1,4 +1,4 @@
----------- Base Image ----------
+# ---------- Base Image ----------
 FROM python:3.12-slim
 # Python runtime env
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -32,23 +32,30 @@ COPY . .
 # Normalize line endings on our entry script (in case committed from Windows)
 RUN dos2unix wait-for-db.sh || true
 
-# --- FIX FOR NPM INSTALL ERROR STARTS HERE ---
 # Change directory to where package.json is located for npm install
 WORKDIR /app/theme/static_src
 RUN npm install || true
-# --- FIX FOR NPM INSTALL ERROR ENDS HERE ---
 
 # Change back to the main app directory for Django commands
 WORKDIR /app
 
+# --- FIX FOR SECRET_KEY ERROR STARTS HERE ---
+# Set a dummy SECRET_KEY for Django manage.py commands during the build phase.
+# This value is only used during the Docker build and will be overridden by
+# Render's environment variable at runtime.
+ENV DJANGO_SECRET_KEY_BUILD="a_dummy_secret_key_for_docker_build_only_replace_this_with_a_real_one_in_render_env"
+
 # Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
-# This command should run from /app, and it will look for the tailwind config in theme/static_src
+# Pass the dummy SECRET_KEY for the build commands
+RUN DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY_BUILD python manage.py tailwind build || true
 
 # ---------- Static Assets ----------
+# Pass the dummy SECRET_KEY for the collectstatic command
+RUN DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY_BUILD python manage.py collectstatic --noinput || true
+# --- FIX FOR SECRET_KEY ERROR ENDS HERE ---
 
 # ---------- Port ----------
 EXPOSE 8000
 
-# # ---------- Entrypoint ----------
-CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec ./wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
-# CMD ["/bin/bash", "-c", "echo '!!! Render test: If you see this, basic container startup works !!!'; sleep 300"]
+# ---------- Entrypoint ----------
+CMD ["./wait-for-db.sh", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
