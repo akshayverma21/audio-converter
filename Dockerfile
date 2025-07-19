@@ -37,10 +37,7 @@ RUN dos2unix wait-for-db.sh || true
 COPY frontend/package*.json ./frontend/
 WORKDIR /app/frontend
 RUN npm install || true
-RUN python manage.py tailwind build || true
 
-# ---------- Static Assets ----------
-RUN python manage.py collectstatic --noinput || true
 
 # ---------- Port ----------
 EXPOSE 8000
