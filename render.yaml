@@ -1,19 +1,22 @@
 services:
   - type: web
     name: audio-converter-web
-    env: python
+    env: docker
+    plan: free
     region: oregon
-    buildCommand: "./build.sh"
-    startCommand: gunicorn audio_converter.wsgi:application
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: DATABASE_URL
-        sync: false
       - key: SECRET_KEY
         sync: false
       - key: DEBUG
         value: "False"
-      - key: NODE_VERSION
-        value: "18"
-    plan: free
-    build:
-         pythonVersion: 3.12.3
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET_NAME
+        value: "convertedfiles"
+      - key: ALLOWED_HOSTS
+        value: "your-app.onrender.com"

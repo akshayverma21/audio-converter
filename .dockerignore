@@ -1,0 +1,27 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# Local settings
+.env
+
+# Local DBs
+db.sqlite3
+
+# Git
+.git
+.gitignore
+
+# Logs & junk
+*.log
+*.tmp
+node_modules/
+# Django collectstatic output (will build fresh)
+staticfiles/
+media/

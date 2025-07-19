@@ -16,6 +16,10 @@ logger = logging.getLogger(__name__)
 MAX_UPLOAD_SIZE_MB = 268
 allowed = settings.ALLOWED_EXTENSIONS
 
+def home(request):
+    return render(request, 'home.html')
+
+
 
 def converter(request):
     if request.method == 'POST':
@@ -155,4 +159,5 @@ def delete_files(file_paths, delay_minutes=30):
 
 def custom_404_view(request, exception):
     return render(request, '404.html', status=404)
+
 
