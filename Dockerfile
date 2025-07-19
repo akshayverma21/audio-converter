@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # ---------- System Dependencies ----------
-# postgresql-client for pg_isready; node & npm for tailwind; curl for diagnostics
+# Install postgresql-client, nodejs, npm, and other dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice \
     libreoffice-writer \
@@ -30,14 +30,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ---------- App Code ----------
 COPY . .
 
-# Normalize line endings on our entry script (in case committed from Windows)
+# Normalize line endings for scripts
 RUN dos2unix wait-for-db.sh || true
 
-
-# COPY package*.json ./
+# ---------- Tailwind Setup ----------
+# Run npm install in the theme directory where package.json exists
+WORKDIR /app/theme
 RUN npm install || true
-# RUN npm run build || true
+RUN python /app/manage.py tailwind build || true
 
+# ---------- Static Assets ----------
+WORKDIR /app
+RUN python manage.py collectstatic --noinput
 
 # ---------- Port ----------
 EXPOSE 8000
