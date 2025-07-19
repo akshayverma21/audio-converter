@@ -34,6 +34,7 @@ COPY . .
 RUN dos2unix wait-for-db.sh || true
 
 # Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
+COPY package*.json ./
 RUN npm install || true
 RUN python manage.py tailwind build || true
 
