@@ -5,8 +5,8 @@ import tempfile
 import subprocess
 
 
-SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe" #LOCAL
-# SOFFICE_PATH = "libreoffice" #PRODUCTION
+# SOFFICE_PATH = r"C:\Program Files\LibreOffice\program\soffice.exe" #LOCAL
+SOFFICE_PATH = "libreoffice" #PRODUCTION
 
 def run_libreoffice_convert(uploaded_file, target_ext: str):
     
