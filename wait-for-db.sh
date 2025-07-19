@@ -5,6 +5,10 @@ echo "Waiting for database..."
 until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
   sleep 2
 done
+RUN python manage.py tailwind build || true
+
+# ---------- Static Assets ----------
+RUN python manage.py collectstatic --noinput || true
 
 echo "Database is ready. Running migrations..."
 python manage.py migrate --noinput
