@@ -34,8 +34,8 @@ COPY . .
 RUN dos2unix wait-for-db.sh || true
 
 # Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
-COPY frontend/package*.json ./frontend/
-WORKDIR /app/frontend
+COPY audio_converter/theme/static_src/package*.json /app/audio_converter/theme/static_src/
+WORKDIR /app/audio_converter/theme/static_src
 RUN npm install || true
 
 
