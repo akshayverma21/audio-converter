@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # ---------- System Dependencies ----------
-RUN apt-get update && apt-get install -y --no-install-recommends \ # <--- CORRECTED THIS LINE
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice \
     libreoffice-writer \
     libreoffice-calc \
@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \ # <--- CORREC
     npm \
     dos2unix \
     && rm -rf /var/lib/apt/lists/*
-
 # ---------- App Directory ----------
 WORKDIR /app
 
@@ -46,6 +45,7 @@ EXPOSE 8000
 
 # ---------- Entrypoint ----------
 CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec /app/wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+---------------
 
 
 # # ---------- Base Image ----------
