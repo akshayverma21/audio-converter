@@ -27,6 +27,7 @@ handler404 = 'audio_youtube.views.custom_404_view'
 
 urlpatterns = [
     path('844794/', admin.site.urls),
+    path("ckeditor5/", include('django_ckeditor_5.urls'), name="ck_editor_5_upload_file"),
     path('', include('audio_youtube.urls')),  # Move converter to a different prefix
     path('pdf/', include('pdf_converter.urls')), 
     path('pdf/',include('file_converter.urls'))
