@@ -35,8 +35,8 @@ RUN chmod +x /app/wait-for-db.sh
 
 # --- Install Node.js dependencies for Tailwind ---
 WORKDIR /app/theme/static_src
-# RUN npm install || true
-RUN which npm
+RUN npm install || true
+# RUN which npm
 
 # Change back to the main app directory for Django commands
 WORKDIR /app
