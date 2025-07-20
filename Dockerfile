@@ -41,8 +41,8 @@ RUN npm install || true
 
 # Change back to the main app directory for Django commands
 WORKDIR /app
-RUN python manage.py tailwind build || true
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py tailwind build || true
+# RUN python manage.py collectstatic --noinput
 
 # Tailwind build (if you use django-tailwind or similar; safe to ignore failure)
 # This command should run from /app, and it will look for the tailwind config in theme/static_src
