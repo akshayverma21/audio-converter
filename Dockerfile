@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # ---------- System Dependencies ----------
-RUN apt-get update && apt-get install -y --no-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \ # <--- CORRECTED THIS LINE
     libreoffice \
     libreoffice-writer \
     libreoffice-calc \
@@ -45,8 +45,6 @@ WORKDIR /app
 EXPOSE 8000
 
 # ---------- Entrypoint ----------
-# This CMD runs wait-for-db.sh, which then runs migrations, static file collection, and starts Gunicorn.
-# The 'ls -la' is for continued debugging if needed, can be removed later.
 CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec /app/wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
 
 
