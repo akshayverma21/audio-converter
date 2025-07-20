@@ -45,7 +45,7 @@ EXPOSE 8000
 
 # ---------- Entrypoint ----------
 CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec /app/wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
----------------
+# ---------------
 
 
 # # ---------- Base Image ----------
