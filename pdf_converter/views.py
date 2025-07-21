@@ -13,6 +13,7 @@ from .forms import ImageConverter
 from audio_youtube.supabase_upload import upload_to_supabase
 import io, os, zipfile, tempfile
 from django.shortcuts import get_object_or_404
+import mimetypes
 
 
 def image_converter(request):
@@ -95,7 +96,9 @@ def image_converter(request):
                     return JsonResponse({
                         'success': True,
                         'download_url': download_url,
-                        'filename': output_filename
+                        'filename': output_filename,
+                        'content_type': mimetypes.guess_type(output_filename)[0] or 'application/octet-stream'
+                        
                     })
 
             except Exception as e:
