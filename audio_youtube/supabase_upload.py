@@ -1,14 +1,11 @@
-
-
-
-
-
-
-
-
 from supabase import create_client
 from django.conf import settings
 import mimetypes
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 def get_supabase_client():
     return create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
