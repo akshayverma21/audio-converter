@@ -76,7 +76,6 @@
   </div>
 </section>
 
-
 <script>
   const formatSelect = document.querySelector('select[name="format"]');
   const fileInput = document.querySelector('input[type="file"][name="files"]');
@@ -147,6 +146,7 @@ document.getElementById("convertImageForm").addEventListener("submit", function 
         resultBox.classList.add("bg-green-100", "text-green-800");
         resultBox.textContent = "✅ Conversion successful! Click below to download.";
         downloadLink.href = data.download_url;
+        downloadLink.setAttribute("data-content-type", data.content_type); // Store content type
         downloadArea.classList.remove("hidden");
       } else {
         resultBox.classList.remove("hidden");
@@ -166,16 +166,17 @@ document.getElementById("convertImageForm").addEventListener("submit", function 
     });
 });
 
-// Force file download using blob
+// Force file download using blob with correct MIME type
 document.getElementById("downloadLink").addEventListener("click", function (e) {
   e.preventDefault();
   const url = this.href;
-  const filename = url.split("/").pop();
+  const filename = this.getAttribute("download");
+  const contentType = this.getAttribute("data-content-type") || "application/octet-stream";
 
   fetch(url)
     .then(response => response.blob())
     .then(blob => {
-      const blobUrl = window.URL.createObjectURL(blob);
+      const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: contentType }));
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = filename;
