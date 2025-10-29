@@ -118,9 +118,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'postgres.afzclrvsjnhbwgoebqpr',  # Note the project ref in username
         'PASSWORD': '[OTYCz5lBN26AofiM]',
-        'HOST': 'aws-0-us-west-1.pooler.supabase.co',  # Use connection pooler
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',  # Try common regions
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
