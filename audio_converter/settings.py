@@ -108,9 +108,9 @@ TEMPLATES = [
         },
     },
 ]
-
+from urllib.parse import quote
 WSGI_APPLICATION = 'audio_converter.wsgi.application'
-
+password = quote('DeNgNo9CZSL6dJNv')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -119,7 +119,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres.afzclrvsjnhbwgoebqpr',  # With project ref
-        'PASSWORD': 'DeNgNo9CZSL6dJNv',
+        'PASSWORD': password,
         'HOST': 'aws-0-ap-south-1.pooler.supabase.com',  # Correct region
         'PORT': '5432',
         'OPTIONS': {
