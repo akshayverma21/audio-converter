@@ -114,13 +114,25 @@ WSGI_APPLICATION = 'audio_converter.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'),  # Get DB URL from .env
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '[OTYCz5lBN26AofiM]',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.co',  # Use connection pooler
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('DATABASE_URL'),  # Get DB URL from .env
+#         conn_max_age=600
+#     )
+# }
 
 SUPABASE_URL = config("SUPABASE_URL")
 SUPABASE_KEY = config("SUPABASE_KEY")
