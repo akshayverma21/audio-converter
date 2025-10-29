@@ -4,6 +4,8 @@ set -ex # Keep this for verbose debugging during initial full run
 echo "--- Script started: wait-for-db.sh ---"
 
 
+export DATABASE_URL="postgresql://postgres:[OTYCz5lBN26AofiM]@db.afzclrvsjnhbwgoebqpr.supabase.co:5432/postgres"
+
 echo "Waiting for database..."
 until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
   sleep 2
