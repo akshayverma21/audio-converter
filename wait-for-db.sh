@@ -3,12 +3,9 @@ set -ex
 
 echo "--- Starting Audio Converter App ---"
 
-# DON'T set DATABASE_URL here - it's already in Render environment
-# The DATABASE_URL is already available from Render environment variables
-
+# Use the connection pooler hostname
 echo "Testing database connection..."
-# Use individual connection parameters instead of DATABASE_URL
-if pg_isready -h db.afzclrvsjnhbwgoebqpr.supabase.co -p 5432 -U postgres -d postgres -t 10; then
+if pg_isready -h aws-0-us-west-1.pooler.supabase.co -p 5432 -U postgres -d postgres -t 10; then
     echo "✅ Database connection successful"
 else
     echo "⚠️  Database connection failed, but continuing..."
@@ -21,7 +18,7 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput || echo "Collectstatic failed, continuing..."
 
 echo "Running database migrations..."
-python manage.py migrate --noinput || { echo "Migrations failed!"; exit 1; }
+python manage.py migrate --noinput || echo "Migrations failed, continuing..."
 
 # Create superuser if environment variables exist
 if [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
@@ -37,11 +34,12 @@ if email and password and not User.objects.filter(email=email).exists():
     print('Superuser created successfully')
 else:
     print('Superuser already exists or credentials missing')
-"
+" || echo "Superuser creation failed, continuing..."
 fi
 
 echo "Starting Gunicorn server..."
-exec gunicorn audio_converter.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+# Use $PORT environment variable provided by Render
+exec gunicorn audio_converter.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
 # set -ex # Keep this for verbose debugging during initial full run
 
 # echo "--- Script started: wait-for-db.sh ---"
