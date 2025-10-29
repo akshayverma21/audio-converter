@@ -3,12 +3,18 @@ set -ex # Keep this for verbose debugging during initial full run
 
 echo "--- Script started: wait-for-db.sh ---"
 
-echo "Waiting for database..."
-until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
+echo "Waiting for Supabase database at $DB_HOST:$DB_PORT..."
+until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1; do
+  echo "Supabase database not ready yet. Waiting..."
   sleep 2
 done
+echo "Supabase database is ready."
+# echo "Waiting for database..."
+# until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
+#   sleep 2
+# done
 
-echo "Database is ready."
+# echo "Database is ready."
 
 echo "Running Tailwind build..."
 # Ensure SECRET_KEY and DEBUG are set in Render's environment variables.
