@@ -3,9 +3,9 @@ set -ex
 
 echo "--- Starting Audio Converter App ---"
 
-# Test connection with pooler
+# Use the CORRECT pooler connection
 echo "Testing database connection..."
-if pg_isready -h aws-0-us-west-1.pooler.supabase.com -p 5432 -U postgres.afzclrvsjnhbwgoebqpr -d postgres -t 30; then
+if pg_isready -h aws-0-ap-south-1.pooler.supabase.com -p 5432 -U postgres.afzclrvsjnhbwgoebqpr -d postgres -t 30; then
     echo "✅ Database connection successful"
 else
     echo "⚠️  Database connection failed, but continuing..."
