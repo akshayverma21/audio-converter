@@ -1,13 +1,16 @@
 
 # # ---------- Base Image ----------
+
+# ---------- Base Image ----------
 FROM python:3.12-slim
+
 # Python runtime env
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # ---------- System Dependencies ----------
-RUN apt-get update && apt-get install -y ffmpeg
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
     libreoffice \
     libreoffice-writer \
     libreoffice-calc \
@@ -17,8 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     nodejs \
     npm \
-    dos2unix \
     && rm -rf /var/lib/apt/lists/*
+
 # ---------- App Directory ----------
 WORKDIR /app
 
@@ -29,25 +32,67 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ---------- App Code ----------
 COPY . .
 
-# Normalize line endings
-RUN dos2unix wait-for-db.sh
-
-# --- Ensure execute permissions for the entrypoint script ---
-RUN chmod +x /app/wait-for-db.sh
+# Make script executable
+RUN chmod +x wait-for-db.sh
 
 # --- Install Node.js dependencies for Tailwind ---
 WORKDIR /app/theme/static_src
-RUN npm install || true
-# RUN which npm
-
-# Change back to the main app directory for Django commands
+RUN npm install
 WORKDIR /app
 
 # ---------- Port ----------
 EXPOSE 8000
 
-# ---------- Entrypoint ----------
-CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec /app/wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# ---------- Simple CMD ----------
+CMD ["/app/wait-for-db.sh"]
+# FROM python:3.12-slim
+# # Python runtime env
+# ENV PYTHONDONTWRITEBYTECODE=1 \
+#     PYTHONUNBUFFERED=1
+
+# # ---------- System Dependencies ----------
+# RUN apt-get update && apt-get install -y ffmpeg
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     libreoffice \
+#     libreoffice-writer \
+#     libreoffice-calc \
+#     libreoffice-impress \
+#     build-essential \
+#     libmagic1 \
+#     postgresql-client \
+#     nodejs \
+#     npm \
+#     dos2unix \
+#     && rm -rf /var/lib/apt/lists/*
+# # ---------- App Directory ----------
+# WORKDIR /app
+
+# # ---------- Python Dependencies ----------
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# # ---------- App Code ----------
+# COPY . .
+
+# # Normalize line endings
+# RUN dos2unix wait-for-db.sh
+
+# # --- Ensure execute permissions for the entrypoint script ---
+# RUN chmod +x /app/wait-for-db.sh
+
+# # --- Install Node.js dependencies for Tailwind ---
+# WORKDIR /app/theme/static_src
+# RUN npm install || true
+# # RUN which npm
+
+# # Change back to the main app directory for Django commands
+# WORKDIR /app
+
+# # ---------- Port ----------
+# EXPOSE 8000
+
+# # ---------- Entrypoint ----------
+# CMD ["/bin/bash", "-c", "echo 'CMD starting via bash -c'; ls -la /app/wait-for-db.sh; exec /app/wait-for-db.sh \"$@\"", "bash", "gunicorn", "audio_converter.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
 # ---------------
 
 
