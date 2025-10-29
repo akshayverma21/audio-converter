@@ -3,19 +3,19 @@ set -ex
 
 echo "--- Starting Audio Converter App ---"
 
-# Use the connection pooler hostname
+# Test connection with pooler
 echo "Testing database connection..."
-if pg_isready -h aws-0-us-west-1.pooler.supabase.co -p 5432 -U postgres -d postgres -t 10; then
+if pg_isready -h aws-0-us-west-1.pooler.supabase.com -p 5432 -U postgres.afzclrvsjnhbwgoebqpr -d postgres -t 30; then
     echo "✅ Database connection successful"
 else
     echo "⚠️  Database connection failed, but continuing..."
 fi
 
 echo "Building Tailwind CSS..."
-python manage.py tailwind build --no-input || echo "Tailwind build failed, continuing..."
+python manage.py tailwind build --no-input
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput || echo "Collectstatic failed, continuing..."
+python manage.py collectstatic --noinput
 
 echo "Running database migrations..."
 python manage.py migrate --noinput || echo "Migrations failed, continuing..."
@@ -38,7 +38,6 @@ else:
 fi
 
 echo "Starting Gunicorn server..."
-# Use $PORT environment variable provided by Render
 exec gunicorn audio_converter.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
 # set -ex # Keep this for verbose debugging during initial full run
 
