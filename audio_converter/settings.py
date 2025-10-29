@@ -108,25 +108,18 @@ TEMPLATES = [
         },
     },
 ]
-from urllib.parse import quote
-WSGI_APPLICATION = 'audio_converter.wsgi.application'
-password = quote('DeNgNo9CZSL6dJNv')
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+WSGI_APPLICATION = 'audio_converter.wsgi.application'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.afzclrvsjnhbwgoebqpr',  # With project ref
-        'PASSWORD': password,
-        'HOST': 'aws-0-ap-south-1.pooler.supabase.com',  # Correct region
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 # DATABASES = {
 #     'default': dj_database_url.config(
 #         default=config('DATABASE_URL'),  # Get DB URL from .env
