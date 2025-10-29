@@ -1,15 +1,8 @@
+
 #!/bin/bash
 set -ex
 
 echo "--- Starting Audio Converter App ---"
-
-# Use the CORRECT pooler connection
-echo "Testing database connection..."
-if pg_isready -h aws-0-ap-south-1.pooler.supabase.com -p 5432 -U postgres.afzclrvsjnhbwgoebqpr -d postgres -t 30; then
-    echo "✅ Database connection successful"
-else
-    echo "⚠️  Database connection failed, but continuing..."
-fi
 
 echo "Building Tailwind CSS..."
 python manage.py tailwind build --no-input
@@ -18,24 +11,10 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
 echo "Running database migrations..."
-python manage.py migrate --noinput || echo "Migrations failed, continuing..."
+python manage.py migrate --noinput
 
-# Create superuser if environment variables exist
-if [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
-    echo "Creating superuser..."
-    python manage.py shell -c "
-import os
-from django.contrib.auth import get_user_model
-User = get_user_model()
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
-if email and password and not User.objects.filter(email=email).exists():
-    User.objects.create_superuser(email=email, password=password)
-    print('Superuser created successfully')
-else:
-    print('Superuser already exists or credentials missing')
-" || echo "Superuser creation failed, continuing..."
-fi
+echo "Creating superuser..."
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')" | python manage.py shell || echo "Superuser skipped"
 
 echo "Starting Gunicorn server..."
 exec gunicorn audio_converter.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
