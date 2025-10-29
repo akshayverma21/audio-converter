@@ -3,12 +3,12 @@ set -ex
 
 echo "--- Starting Audio Converter App ---"
 
-# Set database URL
-export DATABASE_URL="postgresql://postgres:[OTYCz5lBN26AofiM]@db.afzclrvsjnhbwgoebqpr.supabase.co:5432/postgres"
+# DON'T set DATABASE_URL here - it's already in Render environment
+# The DATABASE_URL is already available from Render environment variables
 
-# Try database connection but don't wait forever
 echo "Testing database connection..."
-if pg_isready -d "$DATABASE_URL" -t 10; then
+# Use individual connection parameters instead of DATABASE_URL
+if pg_isready -h db.afzclrvsjnhbwgoebqpr.supabase.co -p 5432 -U postgres -d postgres -t 10; then
     echo "✅ Database connection successful"
 else
     echo "⚠️  Database connection failed, but continuing..."
